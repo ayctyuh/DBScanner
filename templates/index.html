@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DBScanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<header class="hero">
+    <div class="hero-content">
+        <h1>DBScanner</h1>
+        <p>Quét nhanh cấu hình bảo mật của máy chủ cơ sở dữ liệu. Chỉ cần cung cấp thông tin kết nối để bắt đầu.</p>
+    </div>
+</header>
+<main class="layout single">
+    <section class="panel panel-form">
+        <h2>Thông tin kết nối</h2>
+        {% with messages = get_flashed_messages(category_filter=['error']) %}
+            {% if messages %}
+                <div class="flash error">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="post" class="scan-form">
+            <div class="field-grid">
+                <label>
+                    Máy chủ (host)
+                    <input type="text" name="host" value="{{ defaults.host }}" required>
+                </label>
+                <label>
+                    Cổng (port)
+                    <input type="number" name="port" value="{{ defaults.port }}" required>
+                </label>
+            </div>
+            <div class="field-grid">
+                <label>
+                    Tên đăng nhập
+                    <input type="text" name="username" value="{{ defaults.username }}" required>
+                </label>
+                <label>
+                    Mật khẩu
+                    <input type="password" name="password" value="{{ defaults.password }}" required>
+                </label>
+            </div>
+            <label class="checkbox">
+                <input type="checkbox" name="use_ssl" {% if defaults.use_ssl %}checked{% endif %}>
+                Bật SSL khi máy chủ hỗ trợ
+            </label>
+            <button type="submit" class="primary">Bắt đầu quét</button>
+        </form>
+        <p class="note">Ứng dụng chỉ đọc cấu hình; không chỉnh sửa dữ liệu và không khai thác lỗ hổng.</p>
+    </section>
+</main>
+<footer>
+    <small>DBScanner &copy; 2025 · Hỗ trợ nhiều nền tảng CSDL.</small>
+    <a class="footer-link" href="https://www.mysql.com/">Tài liệu tham khảo</a>
+</footer>
+</body>
+</html>

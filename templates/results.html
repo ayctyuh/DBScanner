@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kết quả quét - DBScanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<header class="hero slim">
+    <div class="hero-content">
+        <h1>Kết quả quét</h1>
+        <p>Host: {{ connection_details.host }}:{{ connection_details.port }} <br>
+           Phiên bản: {{ metadata.version or 'Không xác định' }}
+        </p>
+    </div>
+</header>
+<main class="results-layout compact">
+    <section class="summary-row connection">
+        <div class="summary-chip meta">
+            <span class="summary-label">Máy chủ:</span>
+            <span class="summary-value small">{{ connection_details.host }}:{{ connection_details.port }}</span>
+        </div>
+        <div class="summary-chip meta">
+            <span class="summary-label">Người dùng:</span>
+            <span class="summary-value small">{{ metadata.current_user or 'Không xác định' }}</span>
+        </div>
+        <div class="summary-chip meta">
+            <span class="summary-label">Kết nối:</span>
+            <span class="summary-value small">{{ 'SSL' if connection_details.use_ssl else 'TCP' }}</span>
+        </div>
+    </section>
+    <section class="summary-row metrics">
+        <div class="summary-chip total">
+            <span class="summary-label">Tổng phát hiện</span>
+            <span class="summary-value">{{ metadata.summary.total }}</span>
+        </div>
+        {% for level in severity_levels %}
+            <div class="summary-chip severity {{ level|lower }}">
+                <span class="summary-label">{{ level }}</span>
+                <span class="summary-value">{{ metadata.summary.by_severity[level] }}</span>
+            </div>
+        {% endfor %}
+    </section>
+    <section class="findings-accordion">
+        <header class="panel-header">
+            <h2>Phát hiện</h2>
+            <p>Nhấp vào từng mục để xem chi tiết và khuyến nghị xử lý.</p>
+        </header>
+        {% if findings %}
+            <div class="accordion">
+                {% for finding in findings %}
+                    <details class="accordion-item severity-{{ finding.severity|lower }}">
+                        <summary>
+                            <span class="badge">{{ finding.severity }}</span>
+                            <span class="title">{{ finding.title }}</span>
+                        </summary>
+                        <div class="accordion-body">
+                            <p>{{ finding.description }}</p>
+                            {% if finding.details %}
+                                <pre>{{ finding.details | tojson(indent=2) }}</pre>
+                            {% endif %}
+                            <p class="recommendation"><strong>Khuyến nghị:</strong> {{ finding.recommendation }}</p>
+                        </div>
+                    </details>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="success">Không phát hiện vấn đề bảo mật trong phạm vi kiểm tra.</p>
+        {% endif %}
+    </section>
+
+    <section class="metadata-panel">
+        <div class="card">
+            <h3>Biến cấu hình</h3>
+            <p class="section-note">Danh sách một số biến cấu hình quan trọng được thu thập trong phiên quét.</p>
+            {% if metadata.variables %}
+                <pre class="scroll">{{ metadata.variables | tojson(indent=2) }}</pre>
+            {% else %}
+                <p>Không có dữ liệu (có thể thiếu quyền truy cập).</p>
+            {% endif %}
+        </div>
+
+        {% if metadata.skipped_checks %}
+            <div class="card warning">
+                <h3>Kiểm tra bị bỏ qua</h3>
+                <p class="section-note">Những kiểm tra DBScanner không thể thực hiện (thiếu quyền, phiên bản không hỗ trợ...).</p>
+                <ul>
+                    {% for item in metadata.skipped_checks %}
+                        <li><strong>{{ item.check }}</strong>: {{ item.reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <a class="action-link" href="{{ url_for('index') }}">Quét máy khác</a>
+    </section>
+</main>
+<footer>
+    <small>DBScanner &copy; 2025 · Báo cáo chỉ phản ánh trạng thái tại thời điểm quét.</small>
+    <a class="footer-link" href="{{ url_for('index') }}">Quay lại trang chủ</a>
+</footer>
+</body>
+</html>
