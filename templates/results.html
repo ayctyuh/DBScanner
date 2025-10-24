@@ -7,19 +7,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-<header class="hero slim">
+<header class="hero">
     <div class="hero-content">
-        <h1>Kết quả quét</h1>
-        <p>Host: {{ connection_details.host }}:{{ connection_details.port }} <br>
-           Phiên bản: {{ metadata.version or 'Không xác định' }}
-        </p>
+        <h1>DBScanner</h1>
+        <p>Quét nhanh cấu hình bảo mật của máy chủ cơ sở dữ liệu. Chỉ cần cung cấp thông tin kết nối để bắt đầu.</p>
     </div>
 </header>
+<div class="result-content">
+        <h1>Kết quả quét</h1>
+    </div>
 <main class="results-layout compact">
     <section class="summary-row connection">
         <div class="summary-chip meta">
             <span class="summary-label">Máy chủ:</span>
             <span class="summary-value small">{{ connection_details.host }}:{{ connection_details.port }}</span>
+        </div>
+        <div class="summary-chip meta">
+            <span class="summary-label">Phiên bản:</span>
+            <span class="summary-value small">{{ metadata.version or 'Không xác định' }}</span>
         </div>
         <div class="summary-chip meta">
             <span class="summary-label">Người dùng:</span>
@@ -93,12 +98,12 @@
             </div>
         {% endif %}
 
-        <a class="action-link" href="{{ url_for('index') }}">Quét máy khác</a>
+        <a class="action-link" href="{{ url_for('index') }}">Quay lại</a>
     </section>
 </main>
 <footer>
-    <small>DBScanner &copy; 2025 · Báo cáo chỉ phản ánh trạng thái tại thời điểm quét.</small>
-    <a class="footer-link" href="{{ url_for('index') }}">Quay lại trang chủ</a>
+    <small>DBScanner &copy; 2025 · Hỗ trợ nhiều nền tảng CSDL.</small>
+    <a class="footer-link" href="https://www.facebook.com/namdory13">Tìm hiểu về chúng tôi</a>
 </footer>
 </body>
 </html>

@@ -2,7 +2,7 @@ import argparse
 import os
 from types import SimpleNamespace
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request
 
 from scanner import SEVERITY_ORDER, MySQLScanError, scan_mysql
 
@@ -15,7 +15,7 @@ def create_app() -> Flask:
     def index():
         defaults = {
             "host": "localhost",
-            "port": 3306,
+            "port": "",
             "username": "",
             "password": "",
             "use_ssl": False,
@@ -41,8 +41,19 @@ def create_app() -> Flask:
                     severity_levels=severity_levels,
                 )
             except MySQLScanError as exc:
-                flash(str(exc), category="error")
-                return redirect(url_for("index"))
+                form_defaults = {
+                    "host": connection_details["host"],
+                    "port": connection_details["port"],
+                    "username": connection_details["user"],
+                    "password": connection_details["password"],
+                    "use_ssl": connection_details["use_ssl"],
+                }
+                return render_template(
+                    "index.html",
+                    defaults=form_defaults,
+                    error_message="Không thể kết nối tới database, vui lòng thử lại.",
+                    error_details=str(exc),
+                )
 
         return render_template("index.html", defaults=defaults)
 

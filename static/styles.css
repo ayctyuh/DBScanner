@@ -47,7 +47,7 @@ header.hero.slim {
     padding: 2rem 0;
 }
 
-.hero-content {
+.hero-content,.result-content {
     width: min(960px, 90%);
     margin: 0 auto;
 }
@@ -112,10 +112,10 @@ main.layout.single {
 }
 
 .summary-label {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .summary-value {
@@ -454,6 +454,84 @@ code {
     font-size: 0.95rem;
 }
 
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+
+.modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.modal-dialog {
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+    width: min(380px, 92%);
+    text-align: center;
+}
+
+.modal-dialog h3 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+}
+
+.modal-detail {
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    word-break: break-word;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+}
+
+.modal-actions .primary {
+    min-width: 80px;
+}
+
+.modal-actions .secondary {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    padding: 0.55rem 1.4rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.modal-actions .secondary:hover,
+.modal-actions .secondary:focus {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.has-modal {
+    overflow: hidden;
+}
+
 footer {
     width: min(960px, 92%);
     margin: 2.5rem auto 2rem;
@@ -513,5 +591,18 @@ footer {
 
     code {
         background: rgba(148, 163, 184, 0.12);
+    }
+
+    .modal-dialog {
+        box-shadow: 0 24px 56px rgba(15, 23, 42, 0.75);
+    }
+
+    .modal-backdrop {
+        background: rgba(15, 23, 42, 0.7);
+    }
+
+    .modal-actions .secondary {
+        border-color: rgba(148, 163, 184, 0.25);
+        color: var(--text);
     }
 }
