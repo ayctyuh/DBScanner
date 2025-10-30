@@ -15,7 +15,7 @@ def create_app() -> Flask:
     def index():
         defaults = {
             "host": "localhost",
-            "port": "",
+            "port": "3306",
             "username": "",
             "password": "",
             "use_ssl": False,

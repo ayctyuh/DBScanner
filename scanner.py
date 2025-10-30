@@ -43,18 +43,16 @@ def connect_mysql(cfg: Dict[str, Any]) -> Connection:
             "cursorclass": DictCursor,
         }
         if cfg.get("use_ssl"):
-            # Cấu hình SSL với verify mode linh hoạt
+            # Cấu hình SSL 
             import ssl
             ssl_config = {
                 "ssl": {
                     "ssl_version": ssl.PROTOCOL_TLS,
-                    # Không verify certificate nếu dùng self-signed cert
                     "check_hostname": False,
                     "verify_mode": ssl.CERT_NONE,
                 }
             }
             
-            # Nếu có cung cấp SSL cert files
             if cfg.get("ssl_ca"):
                 ssl_config["ssl"]["ca"] = cfg["ssl_ca"]
                 ssl_config["ssl"]["verify_mode"] = ssl.CERT_REQUIRED
@@ -797,7 +795,7 @@ def _check_mysql_version(cursor: DictCursor, metadata: Dict[str, Any]) -> List[F
     major, minor, patch = map(int, match.groups())
     findings: List[Finding] = []
     
-    # MySQL 5.x đã EOL
+
     if major == 5:
         findings.append(
             Finding(
@@ -809,7 +807,6 @@ def _check_mysql_version(cursor: DictCursor, metadata: Dict[str, Any]) -> List[F
             )
         )
     
-    # MySQL < 8.0.28 có lỗ hổng nghiêm trọng
     elif major == 8 and minor == 0 and patch < 28:
         findings.append(
             Finding(
