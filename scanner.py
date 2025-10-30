@@ -101,7 +101,6 @@ def scan_mysql(cfg: Dict[str, Any]) -> Tuple[List[Finding], Dict[str, Any]]:
                 _check_remote_root_access,
                 _check_password_expiration,
                 _check_sql_mode_hardening,
-                # NEW SECURITY CHECKS
                 _check_binlog_exposure,
                 _check_general_log_security,
                 _check_symbolic_links,
