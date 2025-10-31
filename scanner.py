@@ -782,43 +782,71 @@ def _check_test_database(cursor: DictCursor, metadata: Dict[str, Any]) -> List[F
 
 
 def _check_mysql_version(cursor: DictCursor, metadata: Dict[str, Any]) -> List[Finding]:
-    """Kiểm tra phiên bản MySQL có lỗ hổng đã biết"""
+    """Kiểm tra phiên bản MySQL có lỗ hổng CVE đã biết"""
     version_string = metadata.get("version", "")
     if not version_string:
         return []
-    
-    # Parse version number
-    match = re.match(r"(\d+)\.(\d+)\.(\d+)", version_string)
+
+    # Trích xuất số phiên bản chính xác
+    match = re.match(r"(\d+\.\d+\.\d+)", version_string)
     if not match:
         return []
-    
-    major, minor, patch = map(int, match.groups())
-    findings: List[Finding] = []
-    
 
-    if major == 5:
+    version = match.group(1)
+
+    # Danh sách các CVE điển hình (từ NVD và Oracle Security Advisory)
+    KNOWN_CVES: Dict[str, Dict[str, Any]] = {
+        "5.6.51": {
+            "cves": ["CVE-2020-14776", "CVE-2020-14765"],
+            "fixed_in": "5.7.34 / 8.0.25",
+            "description": "Phiên bản 5.6.51 có nhiều lỗ hổng nghiêm trọng cho phép đọc/ghi trái phép và từ chối dịch vụ.",
+        },
+        "5.7.33": {
+            "cves": ["CVE-2021-35604", "CVE-2021-35603"],
+            "fixed_in": "5.7.35 / 8.0.26",
+            "description": "Lỗ hổng SQL Injection và Information Disclosure qua component Server:Optimizer.",
+        },
+        "8.0.26": {
+            "cves": ["CVE-2021-35604", "CVE-2021-35603"],
+            "fixed_in": "8.0.28",
+            "description": "Các bản vá bảo mật cho phép khai thác logic query optimization và leak dữ liệu.",
+        },
+        "8.0.27": {
+            "cves": ["CVE-2022-21402", "CVE-2022-21450", "CVE-2022-21410", "CVE-2022-21418"],
+            "fixed_in": "8.0.28",
+            "description": "Phiên bản 8.0.27 chứa các CVE nghiêm trọng đã được Oracle vá trong 8.0.28.",
+        },
+    }
+
+    findings: List[Finding] = []
+
+    # Nếu là dòng 5.x (rất cũ)
+    if version.startswith("5.5") or version.startswith("5.6"):
         findings.append(
             Finding(
-                title="Phiên bản MySQL đã lỗi thời",
-                severity="High",
-                description=f"MySQL {version_string} thuộc dòng 5.x đã hết hỗ trợ, có nhiều lỗ hổng bảo mật đã biết.",
-                recommendation="Nâng cấp lên MySQL 8.0 hoặc mới hơn.",
-                details={"version": version_string},
+                title="Phiên bản MySQL đã hết vòng đời hỗ trợ (EOL)",
+                severity="Critical",
+                description=f"MySQL {version} đã hết hỗ trợ, chứa nhiều CVE nghiêm trọng từ năm 2020 trở về trước.",
+                recommendation="Nâng cấp ít nhất lên 8.0.28 hoặc bản ổn định mới nhất.",
+                details={"version": version, "status": "EOL"},
             )
         )
-    
-    elif major == 8 and minor == 0 and patch < 28:
+
+    # Nếu khớp với danh sách có CVE đã biết
+    if version in KNOWN_CVES:
+        entry = KNOWN_CVES[version]
         findings.append(
             Finding(
-                title="Phiên bản MySQL có lỗ hổng bảo mật",
+                title=f"MySQL {version} có lỗ hổng CVE đã biết",
                 severity="High",
-                description=f"MySQL {version_string} có các lỗ hổng CVE đã được vá trong 8.0.28+",
-                recommendation="Nâng cấp lên MySQL 8.0.28 hoặc mới hơn.",
-                details={"version": version_string},
+                description=entry["description"],
+                recommendation=f"Nâng cấp lên phiên bản {entry['fixed_in']} để vá {', '.join(entry['cves'])}.",
+                details={"version": version, "cves": entry["cves"], "fixed_in": entry["fixed_in"]},
             )
         )
-    
+
     return findings
+
 
 
 def _check_ssl_configuration(cursor: DictCursor, metadata: Dict[str, Any]) -> List[Finding]:
