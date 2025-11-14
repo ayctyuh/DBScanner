@@ -87,37 +87,37 @@ def scan_mysql(cfg: Dict[str, Any]) -> Tuple[List[Finding], Dict[str, Any]]:
             metadata["current_user"] = _fetch_scalar(cursor, "SELECT CURRENT_USER()")
 
             checks = [
-                _check_validate_password,
-                _check_secure_transport,
-                _check_secure_file_priv,
-                _check_default_password_lifetime,
-                _check_local_infile,
-                _check_skip_grant_tables,
-                _check_global_privileges,
-                _check_mysql_user_table,
-                _check_anonymous_accounts,
-                _check_remote_root_access,
-                _check_password_expiration,
-                _check_sql_mode_hardening,
-                _check_binlog_exposure,
-                _check_general_log_security,
-                _check_symbolic_links,
-                _check_automatic_sp_privileges,
-                _check_test_database,
-                _check_mysql_version,
-                _check_ssl_configuration,
-                _check_max_connections,
-                _check_password_reuse_policy,
-                _check_connection_control,
-                _check_audit_log,
-                _check_event_scheduler,
-                _check_replication_security,
-                _check_super_read_only,
-                _check_log_error_verbosity,
-                _check_show_databases_privilege,
-                _check_definer_security,
-                _check_default_authentication_plugin,
-                _check_binlog_format,
+                _check_validate_password,              # Kiểm tra chính sách độ mạnh mật khẩu
+                _check_secure_transport,               # Kiểm tra yêu cầu bắt buộc dùng SSL/TLS
+                _check_secure_file_priv,               # Kiểm tra thư mục được phép LOAD DATA / OUTFILE
+                _check_default_password_lifetime,      # Kiểm tra thời hạn bắt buộc đổi mật khẩu
+                _check_local_infile,                   # Kiểm tra local_infile – tránh đọc file tùy ý từ client
+                _check_skip_grant_tables,              # Kiểm tra chế độ bỏ qua bảng phân quyền (rất nguy hiểm)
+                _check_global_privileges,              # Kiểm tra quyền GLOBAL quá rộng
+                _check_mysql_user_table,               # Kiểm tra mật khẩu trống, host='%', plugin yếu trong mysql.user
+                _check_anonymous_accounts,             # Kiểm tra tài khoản ẩn danh
+                _check_remote_root_access,             # Kiểm tra root có thể đăng nhập từ xa
+                _check_password_expiration,            # Kiểm tra tài khoản bị yêu cầu đổi mật khẩu
+                _check_sql_mode_hardening,             # Kiểm tra sql_mode có bật chế độ an toàn
+                _check_binlog_exposure,                # Kiểm tra binary log và expire_logs_days
+                _check_general_log_security,           # Kiểm tra general_log / slow_query_log – nguy cơ lộ thông tin
+                _check_symbolic_links,                 # Kiểm tra symbolic-links có bị bật
+                _check_automatic_sp_privileges,        # Kiểm tra tự động cấp quyền cho stored procedure
+                _check_test_database,                  # Kiểm tra database test vẫn tồn tại
+                _check_mysql_version,                  # Kiểm tra phiên bản MySQL có chứa CVE đã biết
+                _check_ssl_configuration,              # Kiểm tra cấu hình SSL/TLS yếu (version/cipher)
+                _check_max_connections,                # Kiểm tra max_connections bất thường (quá thấp/quá cao)
+                _check_password_reuse_policy,          # Kiểm tra chính sách không cho dùng lại mật khẩu cũ
+                _check_connection_control,             # Kiểm tra plugin chống brute-force (connection_control)
+                _check_audit_log,                      # Kiểm tra audit log plugin có được bật không
+                _check_event_scheduler,                # Kiểm tra event scheduler và các scheduled events
+                _check_replication_security,           # Kiểm tra bảo mật replication (SSL + user)
+                _check_super_read_only,                # Kiểm tra slave có bật super_read_only không
+                _check_log_error_verbosity,            # Kiểm tra mức log_error_verbosity quá cao
+                _check_show_databases_privilege,       # Kiểm tra quá nhiều user có SHOW DATABASES
+                _check_definer_security,               # Kiểm tra stored procedures/views dùng DEFINER quyền cao
+                _check_default_authentication_plugin,  # Kiểm tra plugin xác thực mặc định có yếu không
+                _check_binlog_format,                  # Kiểm tra binlog_format có phải STATEMENT (kém an toàn)
             ]
 
             for check in checks:

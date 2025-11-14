@@ -86,17 +86,6 @@
             {% endif %}
         </div>
 
-        {% if metadata.skipped_checks %}
-            <div class="card warning">
-                <h3>Kiểm tra bị bỏ qua</h3>
-                <p class="section-note">Những kiểm tra DBScanner không thể thực hiện (thiếu quyền, phiên bản không hỗ trợ...).</p>
-                <ul>
-                    {% for item in metadata.skipped_checks %}
-                        <li><strong>{{ item.check }}</strong>: {{ item.reason }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
 
         <a class="action-link" href="{{ url_for('index') }}">Quay lại</a>
     </section>
